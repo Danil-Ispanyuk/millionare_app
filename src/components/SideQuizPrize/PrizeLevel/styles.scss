@@ -1,0 +1,123 @@
+.prize-level {
+  &__wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    color: var(--dark);
+    font-size: 20px;
+    font-weight: 400;
+
+    background-image: url("../../../assets/images/quiz-option.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+
+    max-width: 240px;
+    width: 100%;
+    height: 40px;
+
+    &.current {
+      background-image: url("../../../assets/images/quiz-option-hover.svg");
+      color: var(--orange-90);
+    }
+  }
+
+  &__line {
+    width: 67px;
+    height: 1px;
+    background-color: var(--grey);
+
+    &.active {
+      background-color: var(--orange-90);
+    }
+  }
+}
+
+.prize-text {
+  padding: 0 16px;
+}
+
+.line {
+  height: 1px;
+  background: var(--grey-90);
+  flex: 1;
+
+  &.left {
+    margin-right: 16px;
+  }
+
+  &.right {
+    margin-left: 16px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .prize-level {
+    font-size: 18px;
+    padding: 6px 12px;
+  }
+
+  .prize-text {
+    padding: 0 12px;
+  }
+
+  .line {
+    &.left {
+      margin-right: 12px;
+    }
+
+    &.right {
+      margin-left: 12px;
+    }
+  }
+}
+
+@media (max-width: 375px) {
+  .prize-level {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+
+  .prize-text {
+    padding: 0 8px;
+  }
+
+  .line {
+    &.left {
+      margin-right: 8px;
+    }
+
+    &.right {
+      margin-left: 8px;
+    }
+  }
+}
+
+@media (min-width: 2560px) {
+  .prize-level {
+    font-size: 36px;
+    padding: 12px 24px;
+  }
+
+  .prize-text {
+    padding: 0 24px;
+  }
+
+  .line {
+    &.left {
+      margin-right: 24px;
+    }
+
+    &.right {
+      margin-left: 24px;
+    }
+  }
+}

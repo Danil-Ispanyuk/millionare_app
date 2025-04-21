@@ -1,0 +1,58 @@
+.custom-button {
+  background: var(--orange-90);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-size: 20px;
+  padding: 20px 25px;
+  max-width: 296px;
+  height: 64px;
+
+  &:hover {
+    background: var(--orange-80);
+  }
+
+  &:active {
+    background: var(--orange-100);
+  }
+
+
+  @media (max-width: 1440px) {
+    width: 144px;
+    height: 56px;
+    font-size: 18px;
+  }
+
+  @media (max-width: 1024px) {
+    width: 128px;
+    height: 48px;
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    width: 112px;
+    height: 40px;
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  @media (max-width: 375px) {
+    width: 96px;
+    height: 32px;
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  @media (min-width: 2560px) {
+    width: 192px;
+    height: 80px;
+    font-size: 24px;
+    padding: 12px 24px;
+  }
+}

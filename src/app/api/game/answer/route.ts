@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const sessions = await loadSessions();
+    const sessions = await loadSessions()
     const encryptedData = sessions[sessionId]
     const decryptedData = JSON.parse(decrypt(encryptedData)) as ISessionData
 

@@ -35,7 +35,7 @@ export async function POST() {
   }
 
   const encryptedData = encrypt(JSON.stringify(initialData))
-  const sessions = await loadSessions();
+  const sessions = await loadSessions()
   sessions[sessionId] = encryptedData
   await saveSessions(sessions)
   const cookiesObj = await cookies()
@@ -83,7 +83,7 @@ export async function PATCH(request: Request) {
     currentUserReward,
   }
 
-  console.log('updatedData :>> ', updatedData);
+  console.log('updatedData :>> ', updatedData)
 
   const sessions = await loadSessions()
   if (!sessionId || !sessions[sessionId]) {

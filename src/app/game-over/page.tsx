@@ -1,7 +1,6 @@
-import { GameOver } from "@/components";
+import React from 'react'
+import { GameOver } from '@/components'
 
-export default function GameOverPage () {
-  return (
-    <GameOver />
-  )
+export default function GameOverPage() {
+  return <GameOver />
 }

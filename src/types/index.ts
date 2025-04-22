@@ -1,2 +1,2 @@
-export * from "./question.type";
-export * from "./game.type";
+export * from './question.type'
+export * from './game.type'

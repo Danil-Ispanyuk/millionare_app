@@ -1,0 +1,28 @@
+.prizes-menu {
+  &__wrapper {
+    top: 0;
+    left: 0;
+    position: absolute;
+    z-index: 9999;
+    width: 100%;
+    min-height: 100svh;
+    background: var(--white-90);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__header {
+    width: 100%;
+    position: relative;
+    padding: 16px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__content {
+    width: 100%;
+    margin-bottom: 32px;
+  }
+}

@@ -1,18 +1,20 @@
 import React, { PropsWithChildren } from 'react'
-import "./styles.scss";
+import './styles.scss'
+import classNames from 'classnames'
 
 interface IButtonProps {
-    onClick: () => void;
-    disabled?: boolean;
-    className?: string;
+  onClick: () => void
+  disabled?: boolean
+  className?: string
 }
 
 export const Button = ({
-    children,
-    ...props
+  children,
+  className,
+  ...props
 }: PropsWithChildren<IButtonProps>) => {
   return (
-    <button className="custom-button" {...props}>
+    <button className={classNames('custom-button', className)} {...props}>
       {children}
     </button>
   )

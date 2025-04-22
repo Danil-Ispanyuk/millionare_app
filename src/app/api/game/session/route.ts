@@ -1,43 +1,30 @@
-import { NextResponse } from "next/server";
-import { randomUUID } from "crypto";
-import { encrypt, decrypt } from "@/lib/crypto";
-import { cookies } from "next/headers";
-import { IQuestion, IQuestionListForUser, IQuestionRequest, ISessionData } from "@/types";
-import { join } from "path";
-import { readFileSync, writeFileSync } from "fs";
-
-const SESSIONS_FILE = join(process.cwd(), 'sessions.json');
-
-export function loadSessions(): Record<string, string> {
-  try {
-    const data = readFileSync(SESSIONS_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    return {};
-  }
-}
-
-// Save sessions to file
-export function saveSessions(sessions: Record<string, string>) {
-  writeFileSync(SESSIONS_FILE, JSON.stringify(sessions, null, 2));
-}
-
+import { NextResponse } from 'next/server'
+import { randomUUID } from 'crypto'
+import { encrypt, decrypt } from '@/lib/crypto'
+import { cookies } from 'next/headers'
+import {
+  IQuestion,
+  IQuestionListForUser,
+  IQuestionRequest,
+  ISessionData,
+} from '@/types'
+import { loadSessions, saveSessions } from '@/helper/api'
 
 export async function POST() {
-  const sessionId = randomUUID();
+  const sessionId = randomUUID()
 
   const data: IQuestionRequest = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/questions.json`
-  ).then((res) => res.json());
+  ).then(res => res.json())
 
   const formattedQuestions = data.questions.map(
     (question: IQuestion): IQuestionListForUser => {
       return {
         id: question.id,
         reward: question.reward,
-      };
+      }
     }
-  );
+  )
 
   const initialData: ISessionData = {
     currentQuestionId: formattedQuestions[0].id,
@@ -45,40 +32,40 @@ export async function POST() {
     isGameOver: false,
     rewards: formattedQuestions,
     currentUserReward: 0,
-  };
+  }
 
-  const encryptedData = encrypt(JSON.stringify(initialData));
-  const sessions = loadSessions();
-  sessions[sessionId] = encryptedData;
-  saveSessions(sessions);
-  const cookiesObj = await cookies();
+  const encryptedData = encrypt(JSON.stringify(initialData))
+  const sessions = loadSessions()
+  sessions[sessionId] = encryptedData
+  saveSessions(sessions)
+  const cookiesObj = await cookies()
 
-  cookiesObj.set("sessionId", sessionId, {
+  cookiesObj.set('sessionId', sessionId, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  });
+    secure: process.env.NODE_ENV === 'production',
+  })
 
-  return NextResponse.json({ sessionId });
+  return NextResponse.json({ sessionId })
 }
 
 export async function GET() {
-  const cookiesObj = await cookies();
-  const sessionId = cookiesObj.get("sessionId")?.value;
+  const cookiesObj = await cookies()
+  const sessionId = cookiesObj.get('sessionId')?.value
 
-  const sessions = loadSessions();
+  const sessions = loadSessions()
   if (!sessionId || !sessions[sessionId]) {
-    return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   }
 
-  const encryptedData = sessions[sessionId];
-  const decryptedData = JSON.parse(decrypt(encryptedData)) as ISessionData;
+  const encryptedData = sessions[sessionId]
+  const decryptedData = JSON.parse(decrypt(encryptedData)) as ISessionData
 
-  return NextResponse.json(decryptedData);
+  return NextResponse.json(decryptedData)
 }
 
 export async function PATCH(request: Request) {
-  const cookiesObj = await cookies();
-  const sessionId = cookiesObj.get("sessionId")?.value;
+  const cookiesObj = await cookies()
+  const sessionId = cookiesObj.get('sessionId')?.value
 
   const {
     currentQuestionId,
@@ -86,7 +73,7 @@ export async function PATCH(request: Request) {
     isGameOver,
     rewards,
     currentUserReward,
-  } = await request.json();
+  } = await request.json()
 
   const updatedData: ISessionData = {
     currentQuestionId,
@@ -94,29 +81,29 @@ export async function PATCH(request: Request) {
     isGameOver,
     rewards,
     currentUserReward,
-  };
-
-  const sessions = loadSessions();
-  if (!sessionId || !sessions[sessionId]) {
-    return NextResponse.json({ error: 'Session not found' }, { status: 404 });
   }
 
-  const encryptedData = encrypt(JSON.stringify(updatedData));
-  sessions[sessionId] = encryptedData;
-  saveSessions(sessions);
+  const sessions = loadSessions()
+  if (!sessionId || !sessions[sessionId]) {
+    return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+  }
 
-  return NextResponse.json({ message: "Session updated" });
+  const encryptedData = encrypt(JSON.stringify(updatedData))
+  sessions[sessionId] = encryptedData
+  saveSessions(sessions)
+
+  return NextResponse.json({ message: 'Session updated' })
 }
 
 export async function DELETE() {
-  const cookiesObj = await cookies();
-  const sessionId = cookiesObj.get("sessionId")?.value;
+  const cookiesObj = await cookies()
+  const sessionId = cookiesObj.get('sessionId')?.value
 
-  const sessions = loadSessions();
+  const sessions = loadSessions()
   if (!sessionId || !sessions[sessionId]) {
-    return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   }
 
-  cookiesObj.delete("sessionId");
-  return NextResponse.json({ message: "Session deleted" });
+  cookiesObj.delete('sessionId')
+  return NextResponse.json({ message: 'Session deleted' })
 }

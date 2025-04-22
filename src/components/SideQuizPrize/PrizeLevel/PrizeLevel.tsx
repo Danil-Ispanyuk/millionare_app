@@ -1,26 +1,43 @@
-"use client";
+'use client'
 
-import React from "react";
-import "./styles.scss";
+import React from 'react'
+import './styles.scss'
+import { convertToCurrency } from '@/helper/general'
+import classNames from 'classnames'
 
 interface PrizeLevelProps {
-  prize: number;
-  isCurrent?: boolean;
+  prize: number
+  isCurrent?: boolean
+  isPast: boolean
 }
 
 const PrizeLevel: React.FC<PrizeLevelProps> = ({
   prize,
   isCurrent = false,
+  isPast = false,
 }) => {
   return (
     <div className="prize-level__wrapper">
-      <p className={`prize-level__line ${isCurrent ? "active" : null}`} />
-      <div className={`prize-level__container ${isCurrent ? "current" : null}`}>
-        {prize}
+      <p
+        className={classNames('prize-level__line', {
+          active: isCurrent,
+        })}
+      />
+      <div
+        className={classNames('prize-level__container', {
+          past: isPast,
+          current: isCurrent,
+        })}
+      >
+        {convertToCurrency(prize)}
       </div>
-      <p className={`prize-level__line ${isCurrent ? "active" : null}`} />
+      <p
+        className={classNames('prize-level__line', {
+          active: isCurrent,
+        })}
+      />
     </div>
-  );
-};
+  )
+}
 
-export default PrizeLevel;
+export default PrizeLevel

@@ -1,49 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with
-[`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Millionaire App
 
-## Getting Started
+## Overview
+The **Millionaire App** is a web-based game inspired by the popular TV show *Who Wants to Be a Millionaire*. The game challenges players to answer **12 questions** correctly to progress. If a player answers a question incorrectly, they are directed to a game-over screen.
 
-First, run the development server:
+## Project Concept
+- **Gameplay**: Players are presented with a series of 12 multiple-choice questions.
+- **Objective**: Answer all questions correctly to win the game.
+- **Failure Condition**: An incorrect answer ends the game, leading to a final screen displaying the result.
 
+## Prerequisites
+Before setting up the project, ensure you have the following installed:
+- **Node.js** (version 16 or higher recommended)
+- **npm** (comes with Node.js)
+- **Git** (for cloning the repository)
+
+## Setup Instructions
+
+### 1. Clone the Repository
+Clone the project to your local machine using Git:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd millionaire_app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the
-result.
+### 2. Install Dependencies
+Install the required Node.js modules by running:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page
-auto-updates as you edit the file.
+### 3. Configure Environment Variables
+The project requires a `.env` file for configuration. Follow these steps:
 
-This project uses
-[`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts)
-to automatically optimize and load [Geist](https://vercel.com/font), a new font
-family for Vercel.
+1. Locate the `.env.example` file in the project root.
+2. Create a new file named `.env` in the project root.
+3. Copy the contents of `.env.example` into `.env`.
+4. Add the following required keys with appropriate values:
 
-## Learn More
+   - **NEXT_PUBLIC_BASE_URL**: Set this to the local URL where your project will run. For example:
+     ```
+     NEXT_PUBLIC_BASE_URL=http://localhost:3000
+     ```
+   - **SECRET_KEY**: Generate a secure key for encrypting session data. Use the following command to generate a 32-character hexadecimal key:
+     ```bash
+     openssl rand -hex 16
+     ```
+     Add the generated key to `.env`, for example:
+     ```
+     SECRET_KEY=your_generated_key_here
+     ```
 
-To learn more about Next.js, take a look at the following resources:
+Example `.env` file:
+```
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+SECRET_KEY=your_generated_key_here
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Run the Project
+Start the development server with:
+```bash
+npm run dev
+```
+The app will be available at `http://localhost:3000` (or the port specified in your configuration).
 
-You can check out
-[the Next.js GitHub repository](https://github.com/vercel/next.js) - your
-feedback and contributions are welcome!
+### 5. Format the Code
+To format the codebase using Prettier, run:
+```bash
+npm run format
+```
+This ensures consistent code style across the project. Note that SVG files (images and icons) are ignored by Prettier, as configured in `.prettierignore`.
 
-## Deploy on Vercel
+## Project Structure
+- **`app/`**: Contains the Next.js App Router structure, including the `(homepage)` route for the main game page.
+- **`.env.example`**: Template for environment variables.
+- **`.prettierignore`**: Specifies files (e.g., `*.svg`) to ignore during formatting.
+- **`next.config.ts`**: Configures Webpack for SVG handling with `@svgr/webpack`.
+- **`package.json`**: Defines scripts (e.g., `dev`, `format`) and dependencies.
 
-The easiest way to deploy your Next.js app is to use the
-[Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
-from the creators of Next.js.
+## Development Notes
+- The project uses **Next.js** with **TypeScript** for a robust development experience.
+- SVG files are processed as React components using `@svgr/webpack`.
+- Prettier and ESLint are configured for code formatting and linting, with SVG files excluded from formatting.
 
-Check out our
-[Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying)
-for more details.
+## Troubleshooting
+- **Environment Issues**: Ensure `.env` is correctly set up and not committed to version control (it should be in `.gitignore`).
+- **Build Errors**: Clear the Next.js cache if you encounter issues:
+  ```bash
+  rm -rf .next
+  npm run build
+  ```
+- **Port Conflicts**: If `http://localhost:3000` is unavailable, Next.js will prompt you to use a different port.
+- **SVG Issues**: Ensure SVG imports are correctly typed (see `types/svg.d.ts` if TypeScript errors occur).
+
+## Contributing
+Feel free to submit issues or pull requests to improve the project. Ensure all code is formatted (`npm run format`) before submitting.
+
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.

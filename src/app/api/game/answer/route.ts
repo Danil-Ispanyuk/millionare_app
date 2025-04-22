@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const sessions = loadSessions()
+    const sessions = await loadSessions();
     const encryptedData = sessions[sessionId]
     const decryptedData = JSON.parse(decrypt(encryptedData)) as ISessionData
 
@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
         isCorrect: true,
         nextQuestionId: null,
         afterNextQuestionId: null,
+        currentUserReward: question.reward,
       })
     }
 

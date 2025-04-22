@@ -59,10 +59,12 @@ export const QuizLevel = ({ questionId }: QuizLevelProps) => {
   const { isPrizeMenuOpen, togglePrizeMenu } = useHandleMenu()
   const { isMobile } = useScreenSize()
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+
   const { data: questionData, isLoading: isQuestionLoading } = useSWR(
     `/api/game/question/${questionId}`,
     fetchQuestionFetcher
   )
+
   const { trigger, isMutating } = useSWRMutation(
     '/api/game/answer',
     submitAnswerFetcher
@@ -89,6 +91,19 @@ export const QuizLevel = ({ questionId }: QuizLevelProps) => {
     }
 
     await handleQuestions(result)
+    if (result.isCorrect && !result.nextQuestionId) {
+      useGameStore.setState({
+        isGameOver: true,
+        currentUserReward: result.currentUserReward,
+      })
+      return updateSession({
+        currentQuestionId: result.nextQuestionId || '',
+        rewards,
+        isGameOver: true,
+        currentUserReward: result.currentUserReward,
+        nextQuestionId: result.afterNextQuestionId,
+      })
+    }
     await updateSession({
       currentQuestionId: result.nextQuestionId || '',
       rewards,
@@ -135,12 +150,6 @@ export const QuizLevel = ({ questionId }: QuizLevelProps) => {
   }, [isGameOver])
 
   useEffect(() => {
-    if (questionData) {
-      updateUserSession()
-    }
-  }, [questionId, questionData])
-
-  useEffect(() => {
     const fetchUserSession = async () => {
       await fetchSession()
     }
@@ -181,7 +190,10 @@ export const QuizLevel = ({ questionId }: QuizLevelProps) => {
                 isCorrectQuestion
               }
               isWrong={
-                selectedAnswer === option.id && isGameOver && !isMutating
+                selectedAnswer === option.id &&
+                isGameOver &&
+                !currentQuestionId &&
+                !isMutating
               }
               text={option.text}
               handleChooseAnswer={() =>

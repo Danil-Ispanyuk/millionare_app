@@ -1,18 +1,49 @@
-import { readFileSync, writeFileSync } from 'fs'
-import { join } from 'path'
+import { Redis } from '@upstash/redis';
 
-const SESSIONS_FILE = join('/tmp', 'sessions.json')
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || '',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
+});
 
-export function loadSessions(): Record<string, string> {
+export async function loadSessions(): Promise<Record<string, string>> {
   try {
-    const data = readFileSync(SESSIONS_FILE, 'utf-8')
-    return JSON.parse(data)
+    const keys = await redis.keys('session:*');
+    if (keys.length === 0) return {};
+
+    const values = await Promise.all(keys.map((key) => redis.get(key)));
+
+    const sessions: Record<string, string> = {};
+    keys.forEach((key, index) => {
+      const sessionId = key.replace('session:', '');
+      if (values[index]) {
+        sessions[sessionId] = values[index] as string;
+      }
+    });
+
+    return sessions;
   } catch (error) {
-    return {}
+    console.error('Error loading sessions:', error);
+    return {};
   }
 }
 
-// Save sessions to file
-export function saveSessions(sessions: Record<string, string>) {
-  writeFileSync(SESSIONS_FILE, JSON.stringify(sessions, null, 2))
+export async function saveSessions(sessions: Record<string, string>) {
+  try {
+    const pipeline = redis.pipeline();
+
+    const existingKeys = await redis.keys('session:*');
+    if (existingKeys.length > 0) {
+      pipeline.del(...existingKeys);
+    }
+
+    const ttlSeconds = 24 * 60 * 60;
+    for (const [sessionId, data] of Object.entries(sessions)) {
+      pipeline.set(`session:${sessionId}`, data, { ex: ttlSeconds });
+    }
+
+    await pipeline.exec();
+  } catch (error) {
+    console.error('Error saving sessions:', error);
+    throw error;
+  }
 }

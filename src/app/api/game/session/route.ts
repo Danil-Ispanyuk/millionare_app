@@ -35,9 +35,9 @@ export async function POST() {
   }
 
   const encryptedData = encrypt(JSON.stringify(initialData))
-  const sessions = loadSessions()
+  const sessions = await loadSessions();
   sessions[sessionId] = encryptedData
-  saveSessions(sessions)
+  await saveSessions(sessions)
   const cookiesObj = await cookies()
 
   cookiesObj.set('sessionId', sessionId, {
@@ -52,7 +52,7 @@ export async function GET() {
   const cookiesObj = await cookies()
   const sessionId = cookiesObj.get('sessionId')?.value
 
-  const sessions = loadSessions()
+  const sessions = await loadSessions()
   if (!sessionId || !sessions[sessionId]) {
     return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   }
@@ -83,14 +83,16 @@ export async function PATCH(request: Request) {
     currentUserReward,
   }
 
-  const sessions = loadSessions()
+  console.log('updatedData :>> ', updatedData);
+
+  const sessions = await loadSessions()
   if (!sessionId || !sessions[sessionId]) {
     return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   }
 
   const encryptedData = encrypt(JSON.stringify(updatedData))
   sessions[sessionId] = encryptedData
-  saveSessions(sessions)
+  await saveSessions(sessions)
 
   return NextResponse.json({ message: 'Session updated' })
 }
@@ -99,7 +101,7 @@ export async function DELETE() {
   const cookiesObj = await cookies()
   const sessionId = cookiesObj.get('sessionId')?.value
 
-  const sessions = loadSessions()
+  const sessions = await loadSessions()
   if (!sessionId || !sessions[sessionId]) {
     return NextResponse.json({ error: 'Session not found' }, { status: 404 })
   }

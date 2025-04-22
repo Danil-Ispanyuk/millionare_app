@@ -5,7 +5,6 @@ module.exports = {
     node: true,
   },
   extends: [
-    'airbnb',
     'next',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',

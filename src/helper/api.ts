@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
-const SESSIONS_FILE = join(process.cwd(), 'sessions.json')
+const SESSIONS_FILE = join('/tmp', 'sessions.json')
 
 export function loadSessions(): Record<string, string> {
   try {

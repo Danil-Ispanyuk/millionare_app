@@ -182,6 +182,7 @@ export const QuizLevel = ({ questionId }: QuizLevelProps) => {
             <AnswerOption
               key={option.id}
               label={option.id}
+              isDisabled={!!selectedAnswer}
               isSelected={isMutating && selectedAnswer === option.id}
               isCorrect={
                 selectedAnswer === option.id &&

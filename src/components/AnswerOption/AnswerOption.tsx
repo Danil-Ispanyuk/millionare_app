@@ -11,6 +11,7 @@ interface IAnswerOption {
   isCorrect?: boolean
   isWrong?: boolean
   isSelected?: boolean
+  isDisabled?: boolean
 }
 
 export const AnswerOption = ({
@@ -20,6 +21,7 @@ export const AnswerOption = ({
   isCorrect,
   isWrong,
   isSelected,
+  isDisabled,
 }: IAnswerOption) => {
   return (
     <div
@@ -30,7 +32,13 @@ export const AnswerOption = ({
       })}
     >
       <p className="answer-option__line" />
-      <div className="answer-option__container" onClick={handleChooseAnswer}>
+      <div
+        className="answer-option__container"
+        onClick={() => {
+          if (isDisabled) return
+          handleChooseAnswer()
+        }}
+      >
         <QuizOption className="answer-option__icon" />
         <div className="answer-option__label">{label}</div>
         <div className="answer-option__text">{text}</div>

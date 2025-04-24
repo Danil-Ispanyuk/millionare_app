@@ -8,7 +8,12 @@ import {
 } from '@/types'
 import { correctAnswerDelay } from '@/constants/quizLevel'
 
-const handleCorrectAnswer = (result: IQuestionAnswerResponse, set: any) => {
+const handleCorrectAnswer = (
+  result: IQuestionAnswerResponse,
+  set: (
+    partial: Partial<IGameState> | ((state: IGameState) => Partial<IGameState>)
+  ) => void
+) => {
   if (!result.nextQuestionId) {
     set({ isGameOver: true })
     return () => {}
@@ -24,7 +29,11 @@ const handleCorrectAnswer = (result: IQuestionAnswerResponse, set: any) => {
   return () => clearTimeout(timeoutId)
 }
 
-const handleIncorrectAnswer = (set: any) => {
+const handleIncorrectAnswer = (
+  set: (
+    partial: Partial<IGameState> | ((state: IGameState) => Partial<IGameState>)
+  ) => void
+) => {
   set({ isGameOver: true })
 }
 

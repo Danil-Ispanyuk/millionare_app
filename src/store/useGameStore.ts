@@ -1,7 +1,32 @@
 import { create } from 'zustand'
-import { IGameState, ISessionData } from '@/types'
 import { devtools } from 'zustand/middleware'
+import {
+  IGameState,
+  IQuestion,
+  IQuestionAnswerResponse,
+  ISessionData,
+} from '@/types'
 import { correctAnswerDelay } from '@/constants/quizLevel'
+
+const handleCorrectAnswer = (result: IQuestionAnswerResponse, set: any) => {
+  if (!result.nextQuestionId) {
+    set({ isGameOver: true })
+    return () => {}
+  }
+
+  const timeoutId = setTimeout(() => {
+    set({
+      currentQuestionId: result.nextQuestionId,
+      nextQuestionId: result.afterNextQuestionId,
+    })
+  }, correctAnswerDelay)
+
+  return () => clearTimeout(timeoutId)
+}
+
+const handleIncorrectAnswer = (set: any) => {
+  set({ isGameOver: true })
+}
 
 export const useGameStore = create<IGameState>()(
   devtools(set => ({
@@ -11,102 +36,39 @@ export const useGameStore = create<IGameState>()(
     currentUserReward: 0,
     rewards: [],
     isGameOver: false,
-    createSession: async () => {
-      try {
-        const response = await fetch('/api/game/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        })
-        if (!response.ok) {
-          throw new Error(`Failed to create session: ${response.status}`)
-        }
-      } catch (_) {
-        set({ isGameOver: true })
-      }
-    },
-    fetchSession: async () => {
-      try {
-        const response = await fetch('/api/game/session')
-        if (!response.ok) {
-          throw new Error(`Failed to fetch session: ${response.status}`)
-        }
-        const data: ISessionData = await response.json()
-        set({
-          currentQuestionId: data.currentQuestionId,
-          currentUserReward: data.currentUserReward,
-          nextQuestionId: data.nextQuestionId,
-          isGameOver: data.isGameOver,
-          rewards: data.rewards,
-        })
-      } catch (_) {
-        set({ isGameOver: true })
-      }
-    },
-    removeSession: async () => {
-      try {
-        const response = await fetch('/api/game/session', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-        })
-        if (!response.ok) {
-          throw new Error(`Failed to remove session: ${response.status}`)
-        }
-        set({
-          currentQuestionId: null,
-          currentUserReward: 0,
-          isGameOver: true,
-          rewards: [],
-        })
-      } catch (_) {
-        set({ isGameOver: true })
-      }
-    },
-    updateSession: async sessionData => {
-      try {
-        const response = await fetch('/api/game/session', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(sessionData),
-        })
-        if (!response.ok) {
-          throw new Error(`Failed to update session: ${response.status}`)
-        }
-      } catch (error) {
-        set({ isGameOver: true })
-      }
-    },
-    fetchQuestion: async questionData => {
+    isCorrectAnswer: false,
+    error: null,
+    progress: { answered: 0, total: 0 },
+    fetchQuestion: async (questionData: IQuestion) => {
       set({
         currentQuestion: questionData,
         currentUserReward: questionData.reward,
+        error: {
+          message: null,
+        },
       })
     },
-    handleQuestions: async result => {
+    handleQuestion: async (result: IQuestionAnswerResponse) => {
       try {
-        if (result.isCorrect) {
-          if (!result.nextQuestionId) {
-            set(() => ({
-              isGameOver: true,
-            }))
-            return
-          }
-
-          const timeoutId = setTimeout(() => {
-            set(() => ({
-              currentQuestionId: result.nextQuestionId,
-              nextQuestionId: result.afterNextQuestionId,
-            }))
-          }, correctAnswerDelay)
-
-          return () => clearTimeout(timeoutId)
-        } else {
-          set(() => ({
-            isGameOver: true,
-          }))
-        }
-      } catch (_) {
-        set({ isGameOver: true })
+        set(state => ({
+          isCorrectAnswer: result.isCorrect,
+        }))
+        return result.isCorrect
+          ? handleCorrectAnswer(result, set)
+          : handleIncorrectAnswer(set)
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error'
+        set({ error: { message: errorMessage } })
       }
     },
+    setSessionData: (sessionData: Partial<ISessionData>) =>
+      set({
+        currentQuestionId: sessionData.currentQuestionId ?? null,
+        nextQuestionId: sessionData.nextQuestionId ?? null,
+        currentUserReward: sessionData.currentUserReward ?? 0,
+        rewards: sessionData.rewards ?? [],
+        isGameOver: sessionData.isGameOver ?? false,
+      }),
   }))
 )

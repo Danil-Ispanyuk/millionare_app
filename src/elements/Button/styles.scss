@@ -13,6 +13,13 @@
   padding: 20px 25px;
   max-width: 296px;
   height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &.isDisabled {
+    pointer-events: none;
+  }
 
   &:hover {
     background: var(--orange-80);

@@ -83,8 +83,6 @@ export async function PATCH(request: Request) {
     currentUserReward,
   }
 
-  console.log('updatedData :>> ', updatedData)
-
   const sessions = await loadSessions()
   if (!sessionId || !sessions[sessionId]) {
     return NextResponse.json({ error: 'Session not found' }, { status: 404 })

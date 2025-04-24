@@ -11,12 +11,13 @@ export interface IGameState {
   nextQuestionId: string | null
   isGameOver: boolean
   rewards: IQuestionListForUser[]
-  createSession: () => Promise<void>
-  fetchSession: () => Promise<void>
-  updateSession: (sessionData: Partial<ISessionData>) => Promise<void>
-  removeSession: () => Promise<void>
+  isCorrectAnswer: boolean
+  error: {
+    message: string | null
+  }
   fetchQuestion: (questionData: IQuestion) => Promise<void>
-  handleQuestions: (result: IQuestionAnswerResponse) => Promise<void>
+  handleQuestion: (result: IQuestionAnswerResponse) => Promise<void>
+  setSessionData: (sessionData: Partial<ISessionData>) => void
 }
 
 export interface ISessionData {

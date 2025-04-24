@@ -1,17 +1,25 @@
 'use client'
 
 import Image from 'next/image'
-import React, { useEffect } from 'react'
-import { Button } from '@/elements'
+import React, { useEffect, useCallback } from 'react'
+import { Button, Loader } from '@/elements'
 import './styles.scss'
 import { useGameStore } from '@/store/useGameStore'
+import { useSession } from '@/hooks/useSession'
 import { useRouter } from 'next/navigation'
 import { convertToCurrency } from '@/helper/general'
 import useScreenSize from '@/hooks/useScreenSize'
+import { toast } from 'react-toastify'
 
 export const GameOver = () => {
   const router = useRouter()
-  const { currentUserReward, fetchSession, removeSession } = useGameStore()
+  const { currentUserReward, setSessionData } = useGameStore()
+  const {
+    fetchSession,
+    removeSession,
+    isLoading,
+    error: sessionError,
+  } = useSession()
   const { isMobile, isTablet } = useScreenSize()
 
   const handleStart = async () => {
@@ -21,11 +29,31 @@ export const GameOver = () => {
 
   useEffect(() => {
     const fetchUserSession = async () => {
-      await fetchSession()
+      try {
+        const sessionData = await fetchSession()
+        if (sessionData) {
+          setSessionData(sessionData)
+        }
+      } catch (err) {
+        toast.error('Failed to load session data.')
+      }
     }
 
     fetchUserSession()
   }, [])
+
+  useEffect(() => {
+    if (sessionError) {
+      toast.error(sessionError.message)
+      router.push('/')
+    }
+  }, [sessionError])
+
+  if (isLoading) {
+    return <Loader />
+  }
+
+  const isSmallScreen = isMobile || isTablet
 
   return (
     <div className="game-over__wrapper">
@@ -34,7 +62,7 @@ export const GameOver = () => {
           src={`${process.env.NEXT_PUBLIC_BASE_URL}/images/big-hand.svg`}
           width={100}
           height={100}
-          alt="Big Hand"
+          alt="Decorative hand illustration"
           className="game-over__big-hand"
         />
         <div className="game-over__content">
@@ -44,16 +72,26 @@ export const GameOver = () => {
               {convertToCurrency(currentUserReward)} earned
             </div>
           </div>
-          {!isMobile && !isTablet ? (
-            <Button onClick={() => handleStart()}>Try again</Button>
-          ) : null}
+          {!isSmallScreen && (
+            <Button
+              onClick={handleStart}
+              className="game-over__button"
+              aria-label="Try again"
+            >
+              Try again
+            </Button>
+          )}
         </div>
       </div>
-      {isMobile || isTablet ? (
-        <Button onClick={() => handleStart()} className="game-over__button">
+      {isSmallScreen && (
+        <Button
+          onClick={handleStart}
+          className="game-over__button"
+          aria-label="Try again"
+        >
           Try again
         </Button>
-      ) : null}
+      )}
     </div>
   )
 }

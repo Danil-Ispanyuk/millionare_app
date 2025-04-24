@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './global.scss'
 import { InterFont } from '@/assets'
+import { ToastContainer } from 'react-toastify'
 
 export const metadata: Metadata = {
   title: 'Millionare App',
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${InterFont.className}`}>{children}</body>
+      <ToastContainer />
     </html>
   )
 }

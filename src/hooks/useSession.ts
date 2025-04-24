@@ -25,7 +25,7 @@ export const useSession = (): UseSessionReturn => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<SessionError | null>(null)
 
-  const createSession = useCallback(async () => {
+  const createSession = async () => {
     setIsLoading(true)
     setError(null)
     try {
@@ -46,9 +46,9 @@ export const useSession = (): UseSessionReturn => {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }
 
-  const fetchSession = useCallback(async () => {
+  const fetchSession = async () => {
     setIsLoading(true)
     setError(null)
     try {
@@ -70,9 +70,9 @@ export const useSession = (): UseSessionReturn => {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }
 
-  const removeSession = useCallback(async () => {
+  const removeSession = async () => {
     setIsLoading(true)
     setError(null)
     try {
@@ -93,35 +93,31 @@ export const useSession = (): UseSessionReturn => {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }
 
-  const updateSession = useCallback(
-    async (sessionData: Partial<ISessionData>) => {
-      setIsLoading(true)
-      setError(null)
-      try {
-        const response = await fetch(ApiEndpoints.SESSION, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(sessionData),
-        })
-        if (!response.ok) {
-          throw new Error(`Failed to update session: ${response.status}`)
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Unknown error'
-        setError({
-          message: errorMessage,
-          code: err instanceof Error ? undefined : undefined,
-        })
-        throw err
-      } finally {
-        setIsLoading(false)
+  const updateSession = async (sessionData: Partial<ISessionData>) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await fetch(ApiEndpoints.SESSION, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sessionData),
+      })
+      if (!response.ok) {
+        throw new Error(`Failed to update session: ${response.status}`)
       }
-    },
-    []
-  )
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      setError({
+        message: errorMessage,
+        code: err instanceof Error ? undefined : undefined,
+      })
+      throw err
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return {
     isLoading,

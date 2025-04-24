@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect } from 'react'
 import { Button, Loader } from '@/elements'
 import './styles.scss'
 import { useGameStore } from '@/store/useGameStore'

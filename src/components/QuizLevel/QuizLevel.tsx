@@ -23,11 +23,27 @@ export const QuizLevel = ({ questionId }: QuizLevelProps) => {
     currentQuestionId,
     isMutating,
     selectedAnswer,
+    nextQuestionId,
     isCorrectAnswer,
     isGameOver,
     rewards,
     handleChooseAnswer,
   } = useQuizLogic(questionId)
+
+  const handleIsCorrectAnswer = (optionId: string) => {
+    if (selectedAnswer === optionId && isCorrectAnswer && !nextQuestionId) {
+      return true
+    }
+    if (selectedAnswer === optionId && isCorrectAnswer) {
+      return true
+    }
+
+    return false
+  }
+
+  const handleIsWrongAnswer = (optionId: string) => {
+    return selectedAnswer === optionId && !isCorrectAnswer && isGameOver
+  }
 
   return (
     <div className="quiz-level__wrapper">
@@ -53,14 +69,12 @@ export const QuizLevel = ({ questionId }: QuizLevelProps) => {
               key={option.id}
               label={option.id}
               text={option.text}
-              isCorrect={selectedAnswer === option.id && isCorrectAnswer}
+              isCorrect={handleIsCorrectAnswer(option.id)}
               isDisabled={!!selectedAnswer || isMutating}
               isSelected={
                 selectedAnswer === option.id && !isCorrectAnswer && !isGameOver
               }
-              isWrong={
-                selectedAnswer === option.id && isGameOver && !isMutating
-              }
+              isWrong={handleIsWrongAnswer(option.id)}
               handleChooseAnswer={() =>
                 handleChooseAnswer({
                   questionId: currentQuestion?.id || '',

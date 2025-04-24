@@ -6,6 +6,7 @@ import { useGameStore } from '@/store/useGameStore'
 import { useSession } from '@/hooks/useSession'
 import { correctAnswerDelay } from '@/constants/quizLevel'
 import { IQuestion, IQuestionAnswerResponse, ISessionData } from '@/types'
+import { Routes } from '@/constants/routes'
 
 const fetchQuestionFetcher = async (url: string) => {
   const response = await fetch(url)
@@ -77,12 +78,15 @@ export const useQuizLogic = (questionId: string) => {
       })
 
       if (!result.isCorrect) {
-        useGameStore.setState({ isGameOver: true })
+        useGameStore.setState(state => ({ ...state, isGameOver: true }))
         await updateSession({ currentUserReward, isGameOver: true })
         return
       }
 
-      useGameStore.setState({ isCorrectAnswer: result.isCorrect })
+      useGameStore.setState(state => ({
+        ...state,
+        isCorrectAnswer: result.isCorrect,
+      }))
       await handleQuestion(result)
 
       const sessionData: Partial<ISessionData> = {
@@ -94,13 +98,13 @@ export const useQuizLogic = (questionId: string) => {
       }
 
       if (result.isCorrect && !result.nextQuestionId) {
-        useGameStore.setState({
+        useGameStore.setState(state => ({
+          ...state,
           isGameOver: true,
           currentUserReward: result.currentUserReward,
-        })
+        }))
       }
 
-      // Optimistic update
       setSessionData(sessionData)
       await updateSession(sessionData)
 
@@ -111,12 +115,12 @@ export const useQuizLogic = (questionId: string) => {
         return () => clearTimeout(timeoutId)
       }
     } catch (err) {
-      useGameStore.setState({
+      useGameStore.setState(state => ({
+        ...state,
         error: { message: 'Failed to submit answer' },
         isGameOver: true,
-      })
-      await updateSession({ isGameOver: true })
-      router.push('/game-over')
+      }))
+      await updateSession({ isGameOver: true, currentUserReward })
     }
   }
 
@@ -129,7 +133,7 @@ export const useQuizLogic = (questionId: string) => {
   useEffect(() => {
     if (isGameOver) {
       const timeoutId = setTimeout(() => {
-        router.push('/game-over')
+        router.push(Routes.GAME_OVER)
       }, 500)
       return () => clearTimeout(timeoutId)
     }
@@ -137,13 +141,21 @@ export const useQuizLogic = (questionId: string) => {
 
   useEffect(() => {
     if (questionError || sessionError) {
-      useGameStore.setState({
+      useGameStore.setState(state => ({
+        currentUserReward: state.currentUserReward,
+        isGameOver: true,
         error: {
           message:
             questionError?.message || sessionError?.message || 'Unknown error',
         },
+      }))
+
+      updateSession({
+        isGameOver: true,
+        currentUserReward: currentUserReward,
       })
-      router.push('/game-over')
+
+      router.push(Routes.GAME_OVER)
     }
   }, [questionError, sessionError])
 

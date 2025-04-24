@@ -52,19 +52,12 @@
 @media (min-width: 1920px) {
   .prize-level {
     &__container {
-      max-width: 600px;
-      height: 100px;
-      font-size: 30px;
+      max-width: 300px;
+      height: 60px;
+      font-size: 25px;
     }
     &__line {
-      width: calc(100% - 600px);
+      width: calc(100% - 300px);
     }
-  }
-}
-
-@media (min-width: 2560px) {
-  .prize-level {
-    font-size: 36px;
-    padding: 12px 24px;
   }
 }

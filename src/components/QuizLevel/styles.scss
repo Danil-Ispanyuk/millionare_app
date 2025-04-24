@@ -80,20 +80,20 @@
 
   @media (min-width: 1920px) {
     &__question {
-      font-size: 64px;
+      font-size: 40px;
       max-width: 100%;
     }
     &__options {
       max-width: 1800px;
     }
     &__price-content {
-      max-width: 700px;
+      max-width: 500px;
     }
   }
 
   @media (min-width: 2560px) {
     &__question {
-      font-size: 70px;
+      font-size: 50px;
       max-width: 100%;
     }
 
